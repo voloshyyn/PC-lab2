@@ -136,7 +136,7 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    int threads_num = 4;
+    int threads_num = 6;
     vector<int> sizes = {100000, 1000000, 5000000, 10000000};
 
     cout << "=== Тестування на " << threads_num << " потоках ===\n\n";
