@@ -38,3 +38,45 @@ double test_seq(const vector<int> &arr)
     auto end = chrono::high_resolution_clock::now();
     return chrono::duration<double, milli>(end - start).count();
 }
+
+void worker_mutex(const vector<int> &arr, int start_idx, int end_idx)
+{
+    for (int i = start_idx; i < end_idx; i++)
+    {
+        if (arr[i] % 3 == 0)
+        {
+            mtx.lock();
+            total_count_mutex++;
+            if (arr[i] > max_val_mutex)
+            {
+                max_val_mutex = arr[i];
+            }
+            mtx.unlock();
+        }
+    }
+}
+
+double test_mutex(const vector<int> &arr, int threads_num)
+{
+    total_count_mutex = 0;
+    max_val_mutex = -1;
+    vector<thread> ths;
+    int chunk = arr.size() / threads_num;
+
+    auto start = chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < threads_num; i++)
+    {
+        int start_idx = i * chunk;
+        int end_idx = (i == threads_num - 1) ? arr.size() : (i + 1) * chunk;
+        ths.push_back(thread(worker_mutex, ref(arr), start_idx, end_idx));
+    }
+
+    for (int i = 0; i < threads_num; i++)
+    {
+        ths[i].join();
+    }
+
+    auto end = chrono::high_resolution_clock::now();
+    return chrono::duration<double, milli>(end - start).count();
+}
